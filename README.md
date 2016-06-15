@@ -4,9 +4,17 @@ Author: Xiaoran Huang
 
 Aim: This project is for collecting the retracted articles¡¯ information and the articles that cite them.
 
-Install: No need for specific installation, just make sure python and selenium already installed.
+Installation: 
 
-How to run: just click the web_scraping.py
+1.Clone the repository
+2.Navigate to Web_Scraping
+3.Install requirements
+
+How to run: 
+
+just click the web_scraping.py or run command by " python web_scraping.py"
+
+Configuration.config file information:
 
 The program provides 4 different modes as the user can decide to use which one by change the configuration file:
 

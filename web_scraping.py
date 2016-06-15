@@ -326,10 +326,10 @@ def add_download_data_to_csv_file(dest_path, row_index):
             try:
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
-                    print "%s open success!" % (txt_file)
+                    print "{0!s} open success!".format((txt_file))
                     with open(csv_file, CONTINUE_WRITE) as out_csv:
                         write_to = csv.writer(out_csv)
-                        print "%s open success!" % (dest_path)
+                        print "{0!s} open success!".format((dest_path))
                         if is_head_list == 1:
                             # if this is the first time accessing the target file
                             for line in read_in:
@@ -414,7 +414,7 @@ if __name__ == '__main__':
             raise Exception('something wrong with config file')
         if CITATION_LIST_ONLY == 1 and RETRACTION_LIST_ONLY == 0:
             print "CITATION_LIST_ONLY"
-            print "MAX_CITATION_NUMBER %s" % (MAX_CITATION_NUMBER)
+            print "MAX_CITATION_NUMBER {0!s}".format((MAX_CITATION_NUMBER))
             take_out_title_from_retraction_list()
         elif RETRACTION_LIST_ONLY == 1 and CITATION_LIST_ONLY == 0:
             print "RETRACTION_LIST_ONLY"

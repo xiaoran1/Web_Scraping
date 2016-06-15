@@ -385,9 +385,6 @@ def take_out_title_from_retraction_list():
                         if test_time > MAX_CITATION_NUMBER:
                             break
                         test_time += 1
-                    if test_time <= 0:
-                        break
-                    test_time += 1
                     if TITLE_WITH_DATE == 0:
                         last_bracket = article_title.rfind('(')
                         article_title = article_title[:last_bracket]

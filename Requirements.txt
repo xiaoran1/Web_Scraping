@@ -1,8 +1,1 @@
-Please have Python(2.7) and selenium( you can use the command "pip install selenium" in cmd(windows) for install the selenium(just make sure python already installed)) installed.
-
-In order to run the program smoothly, please make sure it is running with a stable and high internet speed.
-
-This program needs the user to have Chrome with the latest version (at least 51.0.2704.84).
-
-Make sure the chromedriver.exe is at the same pathas the main script while running
-
+pip install selenium

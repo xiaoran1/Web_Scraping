@@ -31,7 +31,6 @@ MAX_CITATION_NUMBER = 0
 MAX_RETRACTION_NUMBER = 0
 TITLE_WITH_DATE = 0
 CONTINUE_WRITE = "ab"
-TEST_DATA = 9000
 
 
 def read_from_config():
@@ -62,17 +61,14 @@ def read_from_config():
                 RETRACTION_LIST_ONLY = int(line[1].replace(',', ''))
             if line[0] == "MAX_CITATION_NUMBER":
                 MAX_CITATION_NUMBER = int(line[1].replace(',', ''))
-                print MAX_CITATION_NUMBER
             if line[0] == "MAX_RETRACTION_NUMBER":
                 MAX_RETRACTION_NUMBER = int(line[1].replace(',', ''))
-                print MAX_RETRACTION_NUMBER
             if line[0] == "TITLE_WITH_DATE":
                 TITLE_WITH_DATE = int(line[1].replace(',', ''))
-                print TITLE_WITH_DATE
             if line[0] == "CONTINUE_WRITE":
                 CONTINUE_WRITE = int(line[1].replace(',', ''))
                 CONTINUE_WRITE = ("ab" if CONTINUE_WRITE == 1 else "wb")
-                print CONTINUE_WRITE
+
 
 def remove_extra_file():
     try:
@@ -90,8 +86,8 @@ def setup_webdriver(browser_type):
             chrome_driver = os.path.abspath("chromedriver.exe")
             os.environ["webdriver.chrome.driver"] = chrome_driver
             options = webdriver.ChromeOptions()
-            default_download_path = {"download.default_directory" : DOWNLOAD_PATH}
-            options.add_experimental_option("prefs",default_download_path)
+            default_download_path = {"download.default_directory": DOWNLOAD_PATH}
+            options.add_experimental_option("prefs", default_download_path)
             options.add_argument('--lang=es')
             my_driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=options)
         else:
@@ -101,6 +97,7 @@ def setup_webdriver(browser_type):
         logging.exception(e)
         pass
     return
+
 
 def login_to_serach_page(browser):
     try:
@@ -120,7 +117,7 @@ def login_to_serach_page(browser):
     return browser
 
 
-def search_by_title(browser,title_name):
+def search_by_title(browser, title_name):
     try:
         WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, "//div[@class='search-criteria-input-wr']/input[@type='text']")))
@@ -141,7 +138,7 @@ def mark_and_download_data(browser, end, start):
         browser.find_element_by_xpath("//input[@id='numberOfRecordsRange']").click()
         browser.find_element_by_xpath("//input[@id='markFrom']").send_keys(str(start))
         browser.find_element_by_xpath("//input[@id='markTo']").send_keys(str(end))
-		
+
         browser.find_element_by_xpath("//span[@class='quickoutput-action']/input[@title='Add'][@name='add']").click()
         # get into the marked list page
         browser.find_element_by_xpath("//li[@class='nav-item']/a[@class='nav-link'][@title='Marked List']").click()
@@ -168,7 +165,7 @@ def mark_and_download_data(browser, end, start):
     return browser
 
 
-def loop_through_record_and_download(browser,citation_or_retraction,celling,row_index):
+def loop_through_record_and_download(browser, citation_or_retraction, celling, row_index):
     start_from = 0
     end_by = 0
     upper_bound = 0
@@ -178,8 +175,8 @@ def loop_through_record_and_download(browser,citation_or_retraction,celling,row_
         print "record cited: ", record_count
         if celling > 0:
             if celling < record_count:
-                upper_bound = record_count-celling
-                print "upper bound",upper_bound
+                upper_bound = record_count - celling
+                print "upper bound", upper_bound
         while record_count > upper_bound:
             if record_count > 500:
                 if start_from == 0:
@@ -197,15 +194,15 @@ def loop_through_record_and_download(browser,citation_or_retraction,celling,row_
                     # "which means this is the 2nd time, so from (last_end+1)-last"
                     start_from = end_by + 1
                 end_by += record_count
-            print "search from ",start_from," to ",end_by
+            print "search from ", start_from, " to ", end_by
 
             browser = mark_and_download_data(browser, end_by, start_from)
             while not os.path.isfile(DOWNLOAD_FILE):
                 continue
             if citation_or_retraction == 0:
-                add_download_data_to_csv_file(RETRACTION_LIST_PATH,0)
+                add_download_data_to_csv_file(RETRACTION_LIST_PATH, 0)
             else:
-                add_download_data_to_csv_file(CITATION_LIST_PATH,row_index)
+                add_download_data_to_csv_file(CITATION_LIST_PATH, row_index)
             # Reduce the upper case by 500 to see if there are still left records haven't been downloaded
             record_count -= 500
             # clear list and add another 500 records or start search another title
@@ -217,9 +214,9 @@ def loop_through_record_and_download(browser,citation_or_retraction,celling,row_
                 try:
                     alert = browser.switch_to_alert()
                     alert.accept()
-                except :
+                except:
                     pass
-            except :
+            except:
                 pass
             try:
                 WebDriverWait(browser, 10).until(
@@ -232,7 +229,7 @@ def loop_through_record_and_download(browser,citation_or_retraction,celling,row_
                     browser.execute_script("window.history.go(-1)")
                     browser.execute_script("window.history.go(-1)")
             except Exception as e:
-                print "return to search result fail: ",e
+                print "return to search result fail: ", e
                 pass
             if record_count < 0:
                 record_count = 0
@@ -243,12 +240,12 @@ def loop_through_record_and_download(browser,citation_or_retraction,celling,row_
 
 
 def get_retraction_list():
-    upper_bound = TEST_DATA
-	if CONTINUE_WRITE == 0:
-		try:
-			os.remove(RETRACTION_LIST_PATH)
-		except Exception:
-			print "retraction list file already been removed"
+    upper_bound = 0
+    if CONTINUE_WRITE == 0:
+        try:
+            os.remove(RETRACTION_LIST_PATH)
+        except Exception:
+            print "retraction list file already been removed"
     browser = setup_webdriver("chrome")
     try:
         remove_extra_file()
@@ -280,24 +277,24 @@ def get_retraction_list():
     return
 
 
-def get_citation_data(browser,row_index):
+def get_citation_data(browser, row_index):
     try:
         remove_extra_file()
         if TITLE_WITH_DATE == 0:
             # do sorting by publish date
             WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH,
-                                    "//div[@id='s2id_selectSortBy_.top']/a/span[@class='select2-arrow']/b")))
+                                                                             "//div[@id='s2id_selectSortBy_.top']/a/span[@class='select2-arrow']/b")))
             browser.find_element_by_xpath(
                 "//div[@id='s2id_selectSortBy_.top']/a/span[@class='select2-arrow']/b").click()
             browser.find_element_by_xpath("//div[text()=' Publication Date -- oldest to newest ']").click()
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='RECORD_1']")))
         try:
             times_cited = browser.find_element_by_xpath("//span[@id='records_chunks']/div[@class='search-results']/"
-                                                         "div[@id='RECORD_1']/div[@class='search-results-data']/"
-                                                         "div[@class='search-results-data-cite']/a")
+                                                        "div[@id='RECORD_1']/div[@class='search-results-data']/"
+                                                        "div[@class='search-results-data-cite']/a")
             inner_time = times_cited.get_attribute("innerHTML")
             numeric_time = int(inner_time.replace(',', ''))
-            print "cited times:",numeric_time
+            print "cited times:", numeric_time
             if numeric_time > 0:
                 times_cited.click()
                 # Start adding record into Marked list and download the data to local file
@@ -315,12 +312,12 @@ def get_citation_data(browser,row_index):
     return browser
 
 
-def add_download_data_to_csv_file(dest_path,row_index):
+def add_download_data_to_csv_file(dest_path, row_index):
     txt_file = DOWNLOAD_FILE
     is_head_list = 1
     if os.path.isfile(dest_path):
         is_head_list = 0
-    print "is_head_list:",is_head_list
+    print "is_head_list:", is_head_list
     is_head = 1
     csv_file = dest_path
     open_success = 0
@@ -329,12 +326,12 @@ def add_download_data_to_csv_file(dest_path,row_index):
             try:
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
-                    print "%s open success!"% (txt_file)
+                    print "%s open success!" % (txt_file)
                     with open(csv_file, CONTINUE_WRITE) as out_csv:
                         write_to = csv.writer(out_csv)
                         print "%s open success!" % (dest_path)
                         if is_head_list == 1:
-                        # if this is the first time accessing the target file
+                            # if this is the first time accessing the target file
                             for line in read_in:
                                 if is_head:
                                     is_head = 0
@@ -346,7 +343,7 @@ def add_download_data_to_csv_file(dest_path,row_index):
                                         line.append(row_index)
                                     write_to.writerow(line)
                         else:
-                        # if this is not the first time accessing the target file
+                            # if this is not the first time accessing the target file
                             for line in read_in:
                                 if is_head:
                                     is_head = 0
@@ -379,7 +376,7 @@ def take_out_title_from_retraction_list():
             list_reader = csv.reader(retraction_list_file)
             for row in list_reader:
                 if is_column_head:
-                    is_column_head=False
+                    is_column_head = False
                     pass
                 else:
                     article_title = row[9]
@@ -393,19 +390,19 @@ def take_out_title_from_retraction_list():
                     test_time += 1
                     if TITLE_WITH_DATE == 0:
                         last_bracket = article_title.rfind('(')
-                        article_title =  article_title[:last_bracket]
+                        article_title = article_title[:last_bracket]
                     print ("{} Article title for search is: {}".format(row_index, article_title))
                     # Start to obtain citations with each title
                     browser = search_by_title(browser, article_title)
-                    browser = get_citation_data(browser,row_index)
+                    browser = get_citation_data(browser, row_index)
                     time.sleep(1)
                     row_index += 1
     except IOError, e:
-            print "take_out_title_from_retraction_list error", e
-            browser.quit()
+        print "take_out_title_from_retraction_list error", e
+        browser.quit()
     finally:
-            print "done taking out titles from retraction list for gathering citations"
-            browser.quit()
+        print "done taking out titles from retraction list for gathering citations"
+        browser.quit()
     return
 
 
@@ -415,7 +412,6 @@ if __name__ == '__main__':
         if (WEB_SCIENCE_PASSWORD == "" or WEB_SCIENCE_USERNAME == ""
             or RETRACTION_LIST_PATH == "" or CITATION_LIST_PATH == ""):
             raise Exception('something wrong with config file')
-        print CITATION_LIST_ONLY,RETRACTION_LIST_ONLY,MAX_CITATION_NUMBER,MAX_RETRACTION_NUMBER
         if CITATION_LIST_ONLY == 1 and RETRACTION_LIST_ONLY == 0:
             print "CITATION_LIST_ONLY"
             print "MAX_CITATION_NUMBER %s" % (MAX_CITATION_NUMBER)
@@ -424,7 +420,7 @@ if __name__ == '__main__':
             print "RETRACTION_LIST_ONLY"
             get_retraction_list()
         elif RETRACTION_LIST_ONLY == 1 and CITATION_LIST_ONLY == 1:
-            #raise Exception("You can't have retraction only mode and citation only mode at the same time, please modify your config file")
+            # raise Exception("You can't have retraction only mode and citation only mode at the same time, please modify your config file")
             get_retraction_list()
             take_out_title_from_retraction_list()
         else:

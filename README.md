@@ -2,7 +2,7 @@ Web Scraping Project
 
 Author: Xiaoran Huang
 
-Aim: This project is for collecting the retracted articles¡¯ information and the articles that cite them.
+Aim: This project is for collecting the retracted articles' information and the articles that cite them.
 
 Installation: 
 
@@ -26,7 +26,7 @@ Mode 2: RETRACTION_LIST_ONLY: This parameter can be either 1 or 0, if the user c
 
 MAX_RETRACTION_NUMBER: This parameter can only be set to an integer that greater than 0, it shows that maximum retracted article number that the user wants to get for retracted article information list generation. (For example, if it is setting to 500 means you want to have 500 rows of records in your generated retracted article list file)
 
-Mode 3: If the above 2 parameters (CITATION_LIST_ONLY and RETRACTION_LIST_ONLY) both set to 0, the program will just execute both file¡¯s generation without any upper bound limitation( in this case, the variable MAX_CITATION_NUMBER and MAX_RETRACTION_NUMBER won¡¯t affect the program any more)
+Mode 3: If the above 2 parameters (CITATION_LIST_ONLY and RETRACTION_LIST_ONLY) both set to 0, the program will just execute both file¡¯s generation without any upper bound limitation( in this case, the variable MAX_CITATION_NUMBER and MAX_RETRACTION_NUMBER won't affect the program any more)
 
 Mode 4: If the above 2 variables both set to 1. This is for the test only.
 
@@ -36,8 +36,10 @@ RETRACTION_LIST_NAME: How the user wants to name the retraced article informatio
 
 CITATION_LIST_NAME: How the user wants to name the cited article information list file (must end by .csv)
 
-WEB_SCIENCE_USERNAME & WEB_SCIENCE_PASSWORD: User¡¯s email address and password that used to log into Web of Science
+WEB_SCIENCE_USERNAME & WEB_SCIENCE_PASSWORD: User's email address and password that used to log into Web of Science
 
 TITLE_WITH_DATE: For the cited article information collection only, the user can decides to include the retraction/correction date within the article title for search (set to 1 then) or not(set to 0 then)
 
 CONTINUE_WRITE: Do you want to overwrite the existing information or not, if set to be 0, the program will clean all the existing information within the generated file and replace with the new data.(Only available for citation list only mode or retraction list only mode)
+
+If you have any problems please contact through email: wscqkevin@gmail.com

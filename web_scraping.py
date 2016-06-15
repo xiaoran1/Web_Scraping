@@ -1,7 +1,7 @@
 # Script Name   : web_scrapping.py
 # Author        : Xiaoran Huang
 # Created       : 10th June 2016
-# Last Modified	:
+# Last Modified	: 16th June 2016
 #
 # Description   : This script will get all data of retraction articles from Web Of Science, then for each
 #                 article, find and download all article information that cited from this artcle

@@ -1,19 +1,22 @@
-Web Scraping Project
+## Scrape Web of Science
 
-Author: Xiaoran Huang
+**Author:** Xiaoran Huang
 
-Aim: This project is for collecting the retracted articles' information and the articles that cite them.
+**Aim:** This project is for collecting the retracted articles' information and the articles that cite them.
 
-Installation:
-1.Clone the repository
-2.Navigate to Web_Scraping
-3.Follow the requirements
+**Installation:**  
+1. Clone the repository  
+2. Navigate to Web_Scraping
+3. Follow the requirements
 
-How to run: 
+### How to run: 
 
-just click the web_scraping.py or run command by " python web_scraping.py"
+just click the web_scraping.py or run command by 
+```
+python web_scraping.py
+```
 
-Configuration.config file information:
+### Configuration.config file information:
 
 The program provides 4 different modes as the user can decide to use which one by change the configuration file:
 
@@ -41,4 +44,4 @@ TITLE_WITH_DATE: For the cited article information collection only, the user can
 
 CONTINUE_WRITE: Do you want to overwrite the existing information or not, if set to be 0, the program will clean all the existing information within the generated file and replace with the new data.(Only available for citation list only mode or retraction list only mode)
 
-If you have any problems please contact through email: wscqkevin@gmail.com
+If you have any problems please contact through email: [wscqkevin@gmail.com](mailto:wscqkevin@gmail.com) or open an issue

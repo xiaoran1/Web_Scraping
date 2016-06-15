@@ -8,7 +8,7 @@
 1. Please have Python(2.7) and selenium installed  
 2. In order to run the program smoothly, please make sure it is running with a stable and high internet speed.  
 3. This program needs the user to have Chrome with the latest version (at least 51.0.2704.84).  
-4. Make sure the chromedriver.exe is at the same path as the main script while running
+4. Make sure the chromedriver.exe(download it at https://sites.google.com/a/chromium.org/chromedriver/, version>=2.22) is at the same path as the main script while running
 
 **Installation:**  
 1. Clone the repository  

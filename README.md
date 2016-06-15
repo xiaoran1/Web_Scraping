@@ -25,7 +25,7 @@ Mode 2: RETRACTION_LIST_ONLY: This parameter can be either 1 or 0, if the user c
 
 MAX_RETRACTION_NUMBER: This parameter can only be set to an integer that greater than 0, it shows that maximum retracted article number that the user wants to get for retracted article information list generation. (For example, if it is setting to 500 means you want to have 500 rows of records in your generated retracted article list file)
 
-Mode 3: If the above 2 parameters (CITATION_LIST_ONLY and RETRACTION_LIST_ONLY) both set to 0, the program will just execute both file��s generation without any upper bound limitation( in this case, the variable MAX_CITATION_NUMBER and MAX_RETRACTION_NUMBER won't affect the program any more)
+Mode 3: If the above 2 parameters (CITATION_LIST_ONLY and RETRACTION_LIST_ONLY) both set to 0, the program will just execute both file's generation without any upper bound limitation( in this case, the variable MAX_CITATION_NUMBER and MAX_RETRACTION_NUMBER won't affect the program any more)
 
 Mode 4: If the above 2 variables both set to 1. This is for the test only.
 

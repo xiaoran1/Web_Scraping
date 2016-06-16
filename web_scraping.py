@@ -105,7 +105,7 @@ def login_to_serach_page(browser):
         browser.find_element_by_css_selector("input[name=username]").send_keys(WEB_SCIENCE_USERNAME)
         browser.find_element_by_css_selector("input[name=password]").send_keys(WEB_SCIENCE_PASSWORD)
         browser.find_element_by_css_selector("input[title='Sign In']").click()
-        WebDriverWait(browser, 3).until(
+        WebDriverWait(browser, 5).until(
             EC.presence_of_element_located((By.XPATH, "//td[@class='NEWwokErrorContainer SignInLeftColumn']/h2")))
         # if another session already exist then close that first
         href_text = browser.find_element_by_xpath("//td[@class='NEWwokErrorContainer SignInLeftColumn']/h2").text
@@ -134,13 +134,19 @@ def search_by_title(browser, title_name):
 def mark_and_download_data(browser, end, start):
     try:
         # add retraction list to the marked list (5000 per time)
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//span[@class='addToMarkedListButton'][@style='visibility: visible;']")))
         browser.find_element_by_xpath("//span[@class='addToMarkedListButton'][@style='visibility: visible;']/a").click()
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@id='numberOfRecordsRange']")))
         browser.find_element_by_xpath("//input[@id='numberOfRecordsRange']").click()
         browser.find_element_by_xpath("//input[@id='markFrom']").send_keys(str(start))
         browser.find_element_by_xpath("//input[@id='markTo']").send_keys(str(end))
 
         browser.find_element_by_xpath("//span[@class='quickoutput-action']/input[@title='Add'][@name='add']").click()
         # get into the marked list page
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//li[@class='nav-item']/a[@class='nav-link'][@title='Marked List']")))
         browser.find_element_by_xpath("//li[@class='nav-item']/a[@class='nav-link'][@title='Marked List']").click()
         try:
             current_close_buttons = []
@@ -152,6 +158,8 @@ def mark_and_download_data(browser, end, start):
             pass
         # save articles' information to local desktop
         current_spans = []
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//span[@class='select2-arrow']/b")))
         current_spans = browser.find_elements_by_xpath("//span[@class='select2-arrow']/b")
         current_spans[0].click()
         # browser.find_element_by_xpath("//div[@id='select2-result-label-8']").click()
@@ -224,8 +232,6 @@ def loop_through_record_and_download(browser, citation_or_retraction, celling, r
                 if record_count < 0:
                     browser.find_element_by_xpath("//h1[@class='titleh1']/a").click()
                 else:
-                    # browser.find_element_by_xpath(
-                    #     "//li[@class='nonSearchPageLink']/a[@title='Return to Search Results']").click()
                     browser.execute_script("window.history.go(-1)")
                     browser.execute_script("window.history.go(-1)")
             except Exception as e:
@@ -261,6 +267,7 @@ def get_retraction_list():
         browser.find_element_by_xpath("//input[@value='DocumentType_CORRECTION']").click()
         browser.find_element_by_xpath("//div[@class='more_title']/input[@title='Refine']").click()
         # do sorting by time
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='s2id_selectSortBy_.top']/a/span[@class='select2-arrow']")))
         browser.find_element_by_xpath("//div[@id='s2id_selectSortBy_.top']/a/span[@class='select2-arrow']/b").click()
         browser.find_element_by_xpath("//div[text()=' Times Cited -- highest to lowest ']").click()
         # Put records into marked_list and download them in the marked_list page
@@ -382,7 +389,7 @@ def take_out_title_from_retraction_list():
                     article_title = row[9]
                     print "---------------------------------------next title-------------------------------------------"
                     if MAX_CITATION_NUMBER != 0 and CITATION_LIST_ONLY == 1:
-                        if test_time > MAX_CITATION_NUMBER:
+                        if test_time >= MAX_CITATION_NUMBER:
                             break
                         test_time += 1
                     if TITLE_WITH_DATE == 0:

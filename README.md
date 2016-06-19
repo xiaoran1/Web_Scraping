@@ -52,4 +52,19 @@ Other parameters within the configuration file:
 
 * CONTINUE_WRITE: Do you want to overwrite the existing information or not, if set to be 0, the program will clean all the existing information within the generated file and replace with the new data.(Only available for citation list only mode or retraction list only mode)
 
+* WHERE_TO_START: Only useful when CONTINUE_WRITE been set to 1, tell the program where to start (which row or title to be the first one used for search)
+
+* FAILED_SEARCH_FILE: The file name of the failed title search information, must be end by .csv
+
+* CREATE_FAIL_FILE: If the user wants to create a file for recording the failed title search information, set this to 1, otherwise set it to 0 
+
+
+### Possible Failed Search Conditions: 
+
+* The syntax of the title is not valid for web of science. 
+
+* Web of Science cannot find any record match the title.  
+
+* The article used for search has been cited 0 time. 
+
 If you have any problems please contact through email: [wscqkevin@gmail.com](mailto:wscqkevin@gmail.com) or open an issue.

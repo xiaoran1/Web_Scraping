@@ -94,6 +94,24 @@ def remove_extra_file():
         pass
     return
 
+def get_correct_title(article_title):
+    new_article_title = article_title
+    if article_title[len(article_title)-1] == ")":
+        print "lastbra",re.search(r"\(*\)$", article_title).start()
+        pos = re.search(r"\(*\)$", article_title).start() - 1
+        bracket_count = 0
+        while bracket_count >= 0:
+            if article_title[pos] == ")":
+                bracket_count += 1
+            if article_title[pos] == "(":
+                bracket_count -= 1
+            if bracket_count == -1:
+                break
+            pos -= 1
+        print pos
+        new_article_title = article_title[:pos]
+    return new_article_title
+
 
 def setup_webdriver(browser_type):
     try:
@@ -445,9 +463,8 @@ def take_out_title_from_retraction_list():
                             browser = setup_webdriver("chrome")
                             browser = login_to_serach_page(browser)
                     if TITLE_WITH_DATE == 0:
-                        last_bracket = article_title.rfind('(')
-                        if last_bracket > 0:
-                            article_title = article_title[:last_bracket]
+                        article_title = article_title.strip()
+                        article_title = get_correct_title(article_title)
                     new_article_title = unicode(article_title, errors='ignore')
                     print ("{} Article title for search is: {}".format(row_index, new_article_title))
                     # Start to obtain citations with each title

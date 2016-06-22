@@ -97,7 +97,6 @@ def remove_extra_file():
 def get_correct_title(article_title):
     new_article_title = article_title
     if article_title[len(article_title)-1] == ")":
-        print "lastbra",re.search(r"\(*\)$", article_title).start()
         pos = re.search(r"\(*\)$", article_title).start() - 1
         bracket_count = 0
         while bracket_count >= 0:
@@ -108,7 +107,6 @@ def get_correct_title(article_title):
             if bracket_count == -1:
                 break
             pos -= 1
-        print pos
         new_article_title = article_title[:pos]
     return new_article_title
 

@@ -20,6 +20,7 @@ import re
 import httplib
 import socket
 from selenium.webdriver.remote.command import Command
+from generate_new_retractionlist import generate_more_column
 
 CONFIGRATION_FILE_NAME = "Configration.config"
 DOWNLOAD_PATH = os.getcwd()
@@ -84,16 +85,6 @@ def read_from_config():
             if line[0] == "CREATE_FAIL_FILE":
                 CREATE_FAIL_FILE = int(line[1].replace(',', ''))
 
-
-def remove_extra_file():
-    try:
-        os.remove(DOWNLOAD_FILE)
-        print "savedrecs removed"
-    except Exception, e:
-        print "savedrecs already removed"
-        pass
-    return
-
 def get_correct_title(article_title):
     new_article_title = article_title
     if article_title[len(article_title)-1] == ")":
@@ -107,8 +98,19 @@ def get_correct_title(article_title):
             if bracket_count == -1:
                 break
             pos -= 1
-        new_article_title = article_title[:pos]
+        pos += 1
+        new_article_title = article_title[:-pos]
     return new_article_title
+
+
+def remove_extra_file():
+    try:
+        os.remove(DOWNLOAD_FILE)
+        print "savedrecs removed"
+    except Exception, e:
+        print "savedrecs already removed"
+        pass
+    return
 
 
 def setup_webdriver(browser_type):
@@ -148,25 +150,46 @@ def login_to_serach_page(browser):
     return browser
 
 
-def search_by_title(browser, title_name):
+def add_search_condition(browser, search_input, search_type,field_index):
+    if search_input != "":
+        # add input field
+        if field_index > 1:
+            ww = []
+            ww = browser.find_elements_by_xpath("//div[@class='search-criteria-action add-search-row']/"
+                                                "span[@class='search-criteria-link j-add-criteria']/a")
+            ww[len(ww) - 1].click()
+        # add search content
+        search_query = "//div[@id='container(input"+str(field_index)+")']/input[@type='text']"
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, search_query)))
+        input_field = browser.find_element_by_xpath(search_query)
+        input_field.clear()
+        input_field.send_keys(search_input)
+        # select search type
+        search_query1 = "//tr[@id='searchrow" + str(field_index) + "']/td[@class='search-criteria-cell2']/" \
+                       "div/a/span[@class='select2-arrow']/b"
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH,search_query1)))
+        browser.find_element_by_xpath(search_query1).click()
+        typelist = []
+        search_query2 = "//li[@class='select2-results-dept-0 select2-result select2-result-selectable']/div[text()='"+search_type+"']"
+        browser.find_element_by_xpath(search_query2).click()
+    print field_index,"------------------------------------------------------------------"
+    return browser
+
+def search_by_title(browser, title_name, year, authorlist):
     global FIRST_BY_TITLE
+    field_index = 1
     try:
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@class='search-criteria-input-wr']/input[@type='text']")))
-        search_input = browser.find_element_by_xpath("//div[@class='search-criteria-input-wr']/input[@type='text']")
-        search_input.clear()
-        search_input.send_keys(title_name)
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@id='s2id_select1']/a[@class='select2-choice']/span[@class='select2-arrow']/b")))
-        if FIRST_BY_TITLE == 0:
-            browser.find_element_by_xpath(
-				"//div[@id='s2id_select1']/a[@class='select2-choice']/span[@class='select2-arrow']/b").click()
-            browser.find_element_by_xpath(
-				"//li[@class='select2-results-dept-0 select2-result select2-result-selectable']/div[text()='Title']").click()
-            FIRST_BY_TITLE = 1
-        #time.sleep(3)
-        browser.find_element_by_xpath(
-            "//span[@class='searchButton']/input[@id='UA_GeneralSearch_input_form_sb']").click()
+        browser = add_search_condition(browser, year,"Year Published",field_index)
+        print len(authorlist)
+        print authorlist
+        for single_author in authorlist:
+            field_index += 1
+            browser = add_search_condition(browser, single_author,"Author",field_index)
+        search_buttons = []
+        search_buttons = browser.find_elements_by_xpath(
+            "//span[@class='searchButton']/input[@id='UA_GeneralSearch_input_form_sb']")
+        search_buttons[len(search_buttons)-1].click()
     except Exception, e:
         logging.exception(e)
     return browser
@@ -425,6 +448,10 @@ def add_download_data_to_csv_file(dest_path, row_index,start_from):
 def take_out_title_from_retraction_list():
     global FIRST_BY_TITLE
     test_time = 0
+    take_out_col_num = 1
+    author_col = 0
+    year_col = 0
+    title_col = 0
     print WHERE_TO_START
     where = 0
     remove_extra_file()
@@ -442,11 +469,28 @@ def take_out_title_from_retraction_list():
         with open(csv_file, "rb") as retraction_list_file:
             list_reader = csv.reader(retraction_list_file)
             for row in list_reader:
+                year = ""
+                authorlist = []
+                if take_out_col_num == 1:
+                    for i, coltext in enumerate (row):
+                        if coltext == "year":
+                            year_col = i
+                        if coltext == "AU":
+                            author_col = i
+                        if coltext == "TI":
+                            title_col = i
+                    take_out_col_num = 0
                 if is_column_head:
                     is_column_head = False
                     continue
                 else:
-                    article_title = row[9]
+                    article_title = row[title_col]
+                    authorstring = row[author_col]
+                    if authorstring == "[Anonymous]":
+                        authorlist.append(authorstring)
+                    else:
+                        authorlist = authorstring.split(";")
+                    year = row[year_col]
                     if MAX_CITATION_NUMBER != 0 and CITATION_LIST_ONLY == 1:
                         if test_time >= MAX_CITATION_NUMBER:
                             break
@@ -461,12 +505,11 @@ def take_out_title_from_retraction_list():
                             browser = setup_webdriver("chrome")
                             browser = login_to_serach_page(browser)
                     if TITLE_WITH_DATE == 0:
-                        article_title = article_title.strip()
                         article_title = get_correct_title(article_title)
                     new_article_title = unicode(article_title, errors='ignore')
                     print ("{} Article title for search is: {}".format(row_index, new_article_title))
                     # Start to obtain citations with each title
-                    browser = search_by_title(browser, new_article_title)
+                    browser = search_by_title(browser, new_article_title,year,authorlist)
                     test_time += 1
                     if get_status(browser) == "Dead":
                         raise Exception, 'browser already quit'
@@ -525,10 +568,15 @@ if __name__ == '__main__':
         if CITATION_LIST_ONLY == 1 and RETRACTION_LIST_ONLY == 0:
             print "CITATION_LIST_ONLY"
             print "MAX_CITATION_NUMBER {0!s}".format((MAX_CITATION_NUMBER))
+            # out_file = generate_more_column(RETRACTION_LIST_PATH)
+            # RETRACTION_LIST_PATH =out_file
+            RETRACTION_LIST_PATH = "final_retractionlist.csv"
             take_out_title_from_retraction_list()
         elif RETRACTION_LIST_ONLY == 1 and CITATION_LIST_ONLY == 0:
             print "RETRACTION_LIST_ONLY"
             get_retraction_list()
+            out_file = generate_more_column(RETRACTION_LIST_PATH)
+            RETRACTION_LIST_PATH =out_file
         elif RETRACTION_LIST_ONLY == 1 and CITATION_LIST_ONLY == 1:
             # raise Exception("You can't have retraction only mode and citation only mode at the same time, please modify your config file")
             get_retraction_list()
@@ -537,6 +585,8 @@ if __name__ == '__main__':
             MAX_CITATION_NUMBER = 0
             MAX_RETRACTION_NUMBER = 0
             get_retraction_list()
+            out_file = generate_more_column(RETRACTION_LIST_PATH)
+            RETRACTION_LIST_PATH =out_file
             take_out_title_from_retraction_list()
     finally:
         print "Quit the main program"

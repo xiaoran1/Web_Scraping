@@ -12,7 +12,7 @@
 
 **Installation:**  
 1. Clone the repository  
-2. Navigate to Web_Scraping
+2. Navigate to Web_Scraping  
 3. Follow the requirements
 
 ### How to run: 

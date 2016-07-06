@@ -67,4 +67,19 @@ Other parameters within the configuration file:
 
 * The article used for search has been cited 0 time. 
 
+
+### Potential problem with web scraping project:
+
+* problem:
+Search result number change problem:
+for example, user search "retraction of" and then do the refine of "RETRACTION" and "CORRECTION ", 
+then sort by "times cited-highest to lowest", it will show there are 9599 records in total on the left hand side, 
+but when user does the marking, it shows there are only 5876 records instead(Specifically ,
+if you click "Add to Marked list" and fill the condition with "from 5500 to 6000", 
+then it will show you only 377 records get saved and the number (originally 9599) on the left side will become 5876. 
+
+* reason:
+the 9k results include duplications, when user doing the mark the web of science system might change the searched result to filter out 
+the duplications. 
+
 If you have any problems please contact through email: [wscqkevin@gmail.com](mailto:wscqkevin@gmail.com) or open an issue.

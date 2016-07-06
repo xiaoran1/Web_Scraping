@@ -1,76 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-import os
-import csv
-import sys
-import logging
-import time
-import httplib
-import socket
-from selenium.webdriver.remote.command import Command
+from General_browser_function_handle import *
 
-DOWNLOAD_PATH = os.getcwd()
-DOWNLOAD_FILE = "savedrecs.txt"
-RETRACTION_LIST_PATH = "top_articles.csv"
-CITATION_LIST_PATH = "miscitationlist.csv"
 WEB_SCIENCE_USERNAME = "xiaoran1@ualberta.ca"
 WEB_SCIENCE_PASSWORD = "Wscq@1234"
-MAX_SEARCH_NUMBER = 500
-CONTINUE_WRITE = "ab"
-WHERE_TO_START = 0
-FIRST_BY_TITLE = 0
-FAILED_FILE_NAME = "faillist.csv"
-CREATE_FAIL_FILE = 0
-
-
-def remove_extra_file():
-    try:
-        os.remove(DOWNLOAD_FILE)
-        print "savedrecs removed"
-    except Exception, e:
-        print "savedrecs already removed"
-        pass
-    return
-
-
-def setup_webdriver(browser_type):
-    try:
-        if browser_type == "chrome":
-            chrome_driver = os.path.abspath("chromedriver.exe")
-            os.environ["webdriver.chrome.driver"] = chrome_driver
-            options = webdriver.ChromeOptions()
-            default_download_path = {"download.default_directory": DOWNLOAD_PATH}
-            options.add_experimental_option("prefs", default_download_path)
-            options.add_argument('--lang=es')
-            my_driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=options)
-        else:
-            my_driver = webdriver.Firefox()
-        return my_driver
-    except Exception, e:
-        logging.exception(e)
-        pass
-    return
-
-
-def login_to_serach_page(browser):
-    try:
-        browser.get("https://login.webofknowledge.com")
-        browser.find_element_by_css_selector("input[name=username]").send_keys(WEB_SCIENCE_USERNAME)
-        browser.find_element_by_css_selector("input[name=password]").send_keys(WEB_SCIENCE_PASSWORD)
-        browser.find_element_by_css_selector("input[title='Sign In']").click()
-        WebDriverWait(browser, 5).until(
-            EC.presence_of_element_located((By.XPATH, "//td[@class='NEWwokErrorContainer SignInLeftColumn']/h2")))
-        # if another session already exist then close that first
-        href_text = browser.find_element_by_xpath("//td[@class='NEWwokErrorContainer SignInLeftColumn']/h2").text
-        if (href_text == 'A SESSION ALREADY EXISTS WITH THESE LOGIN CREDENTIALS.'):
-            browser.find_element_by_link_text("continue and establish a new session").click()
-    except Exception, e:
-        logging.exception(e)
-        browser.quit()
-    return browser
+CONINFO = Config_Data(WEB_SCIENCE_USERNAME, WEB_SCIENCE_PASSWORD)
+CONINFO.miscitation_article_path = "top_articles.csv"
+CONINFO.miscitation_list_path = "miscitation_list.csv"
+CONINFO.max_search_number = 500
+CONINFO.continue_write = "ab"
+CONINFO.where_to_start = 2
+CONINFO.first_by_title = 0
+CONINFO.failed_file_name = "faillist.csv"
+CONINFO.create_fail_file = 0
 
 
 def search_by_title(browser, title_name):
@@ -160,7 +100,7 @@ def loop_through_record_and_download(browser, record_count, row_index):
                     if get_status(browser) == "Dead":
                         raise Exception, 'browser already quit'
                     continue
-                add_download_data_to_csv_file(CITATION_LIST_PATH, row_index,start_from)
+                add_download_data_to_csv_file(CONINFO.miscitation_list_path, row_index,start_from)
             else:
                 return browser
             # Reduce the upper case by 500 to see if there are still left records haven't been downloaded
@@ -183,7 +123,7 @@ def get_citation_data(browser, row_index,article_title):
         record_count = int(numeric_time.replace(',', ''))
         print "actual cited times: ", record_count
         if record_count > 0:
-            loop_through_record_and_download(browser,record_count,row_index)
+            browser = loop_through_record_and_download(browser,record_count,row_index)
             browser.find_element_by_xpath("//h1[@class='titleh1']/a").click()
         # else:
         #     print "{0!s} has not been cited yet !".format(article_title)
@@ -211,7 +151,7 @@ def add_download_data_to_csv_file(dest_path, row_index,start_from):
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
                     print "{0!s} open success!".format(txt_file)
-                    with open(csv_file, CONTINUE_WRITE) as out_csv:
+                    with open(csv_file, CONINFO.continue_write) as out_csv:
                         write_to = csv.writer(out_csv)
                         print "{0!s} open success!".format(dest_path)
                         rowcount = start_from
@@ -252,16 +192,16 @@ def take_out_title_from_articles_list():
     where = 0
     remove_extra_file()
     row_index = 0
-    if CONTINUE_WRITE == 0:
+    if CONINFO.continue_write == 0:
         try:
-            os.remove(CITATION_LIST_PATH)
+            os.remove(CONINFO.miscitation_list_path)
         except Exception:
             print "Citation list file already been removed"
     browser = setup_webdriver("chrome")
     try:
-        browser = login_to_serach_page(browser)
+        browser = login_to_serach_page(browser,CONINFO.web_science_username,CONINFO.web_science_password)
         is_column_head = True
-        csv_file = RETRACTION_LIST_PATH
+        csv_file = CONINFO.miscitation_article_path
         with open(csv_file, "rb") as miscitation_list_file:
             list_reader = csv.reader(miscitation_list_file)
             for row in list_reader:
@@ -270,18 +210,18 @@ def take_out_title_from_articles_list():
                     continue
                 else:
                     article_title = row[2]
-                    if MAX_SEARCH_NUMBER != 0:
-                        if test_time >= MAX_SEARCH_NUMBER:
+                    if CONINFO.max_search_number != 0:
+                        if test_time >= CONINFO.max_search_number:
                             break
                     where += 1
                     row_index += 1
-                    if WHERE_TO_START > 0 and where < WHERE_TO_START:
+                    if CONINFO.where_to_start > 0 and where < CONINFO.where_to_start:
                         continue
-                    if WHERE_TO_START > 0 and where > WHERE_TO_START+198:
+                    if CONINFO.where_to_start > 0 and where > CONINFO.where_to_start + 198:
                         browser.quit()
                         FIRST_BY_TITLE = 0
                         browser = setup_webdriver("chrome")
-                        browser = login_to_serach_page(browser)
+                        browser = login_to_serach_page(browser,CONINFO.web_science_username,CONINFO.web_science_password)
                     new_article_title = unicode(article_title, errors='ignore')
                     print ("{} Article title for search is: {}".format(row_index, new_article_title))
                     # Start to obtain citations with each title
@@ -292,14 +232,16 @@ def take_out_title_from_articles_list():
                     try:
                         not_found = browser.find_element_by_xpath(
                             "//div[@class='errorMessage'][@id='noRecordsDiv']")
-                        write_failed_info(article_title,"no record found error",row_index)
+                        write_failed_info(article_title,"no record found error",row_index,
+                                          CONINFO.create_fail_file,CONINFO.continue_write,CONINFO.failed_file_name)
                         continue
                     except:
                         pass
                     try:
                         not_found = browser.find_element_by_xpath(
                             "//div[@class='errorMessage'][@id='searchErrorMessage']")
-                        write_failed_info(article_title,"search name error",row_index)
+                        write_failed_info(article_title,"no record found error",row_index,
+                                          CONINFO.create_fail_file,CONINFO.continue_write,CONINFO.failed_file_name)
                         continue
                     except:
                         pass
@@ -314,26 +256,6 @@ def take_out_title_from_articles_list():
         print "done taking out titles from retraction list for gathering citations"
         browser.quit()
     return
-
-def get_status(browser):
-    try:
-        browser.execute(Command.STATUS)
-        return "Alive"
-    except (socket.error, httplib.CannotSendRequest):
-        return "Dead"
-
-def write_failed_info(article_title, fail_indormation,row_index):
-    if CREATE_FAIL_FILE == 1:
-        if CONTINUE_WRITE == 0:
-            try:
-                os.remove(FAILED_FILE_NAME)
-            except:
-                print "fail infomation file already removed"
-        row = [article_title,fail_indormation,row_index]
-        with open(FAILED_FILE_NAME,CONTINUE_WRITE) as in_csv:
-            print "{0!s} open success!".format(FAILED_FILE_NAME)
-            writer = csv.writer(in_csv)
-            writer.writerow(row)
 
 if __name__ == '__main__':
     try:

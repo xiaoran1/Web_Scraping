@@ -1,10 +1,10 @@
 ## Scrape Web of Science
 
-**Author:** Xiaoran Huang
+Collect list of articles that are eventually retracted, and articles that cite retracted articles. 
 
-**Aim:** This project is for collecting the retracted articles' information and the articles that cite them.
+### Installation
 
-**Preparation:**  
+**Requirements:**  
 1. Please have Python(2.7) and selenium installed  
 2. In order to run the program smoothly, please make sure it is running with a stable and high internet speed.  
 3. This program needs the user to have Chrome with the latest version (at least 51.0.2704.84).  
@@ -13,16 +13,18 @@
 **Installation:**  
 1. Clone the repository  
 2. Navigate to Web_Scraping  
-3. Follow the requirements
+3. To install required libraries:
+```
+ pip install -r requirements.txt 
+```
 
-### How to run: 
+### Usage: 
 
-just click the web_scraping.py or run command by 
 ```
 python web_scraping.py
 ```
 
-### Configuration.config file information:
+### config file:
 
 The program provides 4 different modes as the user can decide to use which one by change the configuration file:
 
@@ -79,7 +81,8 @@ if you click "Add to Marked list" and fill the condition with "from 5500 to 6000
 then it will show you only 377 records get saved and the number (originally 9599) on the left side will become 5876. 
 
 * reason:
-the 9k results include duplications, when user doing the mark the web of science system might change the searched result to filter out 
-the duplications. 
+the 9k results include duplications, when user doing the mark the web of science system might change the searched result to filter out the duplications. 
 
-If you have any problems please contact through email: [wscqkevin@gmail.com](mailto:wscqkevin@gmail.com) or open an issue.
+### Author and Contact Information
+
+Xiaoran Huang. If you have any problems please contact through email: [wscqkevin@gmail.com](mailto:wscqkevin@gmail.com) or open an issue.

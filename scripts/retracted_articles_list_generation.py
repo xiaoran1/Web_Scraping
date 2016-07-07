@@ -11,20 +11,24 @@ def read_from_config():
             if line[0] == "WEB_SCIENCE_PASSWORD":
                 CONINFO.web_science_password = line[1]
             if line[0] == "RETRACTION_NOTICES_FILE_PATH":
-                CONINFO.retraction_notices_path= line[1]
+                CONINFO.retraction_notices_path= "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "RETRACTED_ARTICLES_FILE_PATH":
-                CONINFO.retracted_articles_path= line[1]
+                CONINFO.retracted_articles_path= "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "FAILED_FILE_NAME":
-                CONINFO.failed_file_name = line[1]
+                CONINFO.failed_file_name = "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "MAX_RETRACTED_ARTICLES_NUMBER":
                 CONINFO.max_retracted_articles_number = int(line[1].replace(',', ''))
             if line[0] == "CONTINUE_WRITE":
-                continue_write = int(line[1].replace(',', ''))
-                CONINFO.continue_write = ("ab" if continue_write == 1 else "wb")
+                CONINFO.continue_write = int(line[1].replace(',', ''))
             if line[0] == "WHERE_TO_START":
                 CONINFO.where_to_start = int(line[1].replace(',', ''))
             if line[0] == "CREATE_FAIL_FILE":
                 CONINFO.create_fail_file = int(line[1].replace(',', ''))
+            if line[0] == "MISCITAION_OR_NOT":
+                CONINFO.miscitaion_or_not = int(line[1].replace(',', ''))
 
 
 
@@ -53,35 +57,38 @@ def add_search_condition(browser, search_input, search_type,field_index):
         browser.find_element_by_xpath(search_query2).click()
     return browser
 
-def do_search(browser, publication_name, year, authorlist,second_search):
+def do_search(browser, publication_name, year, authorlist,second_search, title):
     field_index = 1
     author_num = 0
     try:
         resetform = []
         resetform = browser.find_elements_by_xpath("//span[@class='search-criteria-link j-clear-criteria']/a")
         resetform[len(resetform)-1].click()
-        browser = add_search_condition(browser, publication_name, "Publication Name", field_index)
-        field_index += 1
-        browser = add_search_condition(browser, year,"Year Published",field_index)
-        for single_author in authorlist:
-            #Create a new name string in the format of "full last name" plus initials of the rest
-            final_name = single_author
-            name_pos_list = single_author.split(",")
-            initials = ""
-            for i, item in enumerate(name_pos_list):
-                if i > 0:
-                    initials += item.strip()[0]
-            final_name = "{}, {}".format(name_pos_list[0], initials)
-            if second_search:
-                if author_num >= 2:
-                    break
+        if title == "":
+            browser = add_search_condition(browser, publication_name, "Publication Name", field_index)
+            field_index += 1
+            browser = add_search_condition(browser, year,"Year Published",field_index)
+            for single_author in authorlist:
+                #Create a new name string in the format of "full last name" plus initials of the rest
+                final_name = single_author
+                name_pos_list = single_author.split(",")
+                initials = ""
+                for i, item in enumerate(name_pos_list):
+                    if i > 0:
+                        initials += item.strip()[0]
+                final_name = "{}, {}".format(name_pos_list[0], initials)
+                if second_search:
+                    if author_num >= 2:
+                        break
+                    else:
+                        field_index += 1
+                        browser = add_search_condition(browser, final_name, "Author", field_index)
+                        author_num += 1
                 else:
                     field_index += 1
-                    browser = add_search_condition(browser, final_name, "Author", field_index)
-                    author_num += 1
-            else:
-                field_index += 1
-                browser = add_search_condition(browser, final_name,"Author",field_index)
+                    browser = add_search_condition(browser, final_name,"Author",field_index)
+        else:
+            browser = add_search_condition(browser, title, "Title", field_index)
         search_buttons = []
         search_buttons = browser.find_elements_by_xpath(
             "//span[@class='searchButton']/input[@id='UA_GeneralSearch_input_form_sb']")
@@ -157,7 +164,7 @@ def add_download_data_to_csv_file(dest_path, row_index):
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
                     print "{0!s} open success!".format(txt_file)
-                    with open(csv_file, CONINFO.continue_write) as out_csv:
+                    with open(csv_file, "ab") as out_csv:
                         write_to = csv.writer(out_csv)
                         print "{0!s} open success!".format(dest_path)
                         if is_head_list == 1:
@@ -252,20 +259,23 @@ def take_out_title_from_retraction_list():
                     if CONINFO.max_retracted_articles_number != 0:
                         if test_time >= CONINFO.max_retracted_articles_number:
                             continue
-                    new_article_title = unicode(article_title, errors='ignore')
-                    print ("{} Article title for search is: {}".format(row_index, new_article_title))
+                    print ("{} Article title for search is: {}".format(row_index, article_title))
                     # Start to obtain citations with each title
-                    browser = do_search(browser,publication_name,year,authorlist,False)
+                    if(CONINFO.miscitaion_or_not == 1):
+                        article_title  = "\"{}\"".format(article_title)
+                    else:
+                        article_title = ""
+                    browser = do_search(browser,publication_name,year,authorlist,False,article_title)
                     test_time += 1
                     if get_status(browser) == "Dead":
                         raise Exception, 'browser already quit'
                     try:
                         not_found = browser.find_element_by_xpath(
                             "//div[@class='errorMessage'][@id='noRecordsDiv']")
-                        print "not_found",not_found
-                        browser = do_search(browser, publication_name, year, authorlist, True)
-                        not_found = browser.find_element_by_xpath(
-                            "//div[@class='errorMessage'][@id='noRecordsDiv']")
+                        if(article_title!=""):
+                            browser = do_search(browser, publication_name, year, authorlist, True,article_title)
+                            not_found = browser.find_element_by_xpath(
+                                "//div[@class='errorMessage'][@id='noRecordsDiv']")
                         write_failed_info(article_title,"no record found error",row_index,
                                           CONINFO.create_fail_file,CONINFO.continue_write,CONINFO.failed_file_name)
                         continue

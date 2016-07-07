@@ -3,15 +3,19 @@ RETRACTION_NOTICES_FILE_PATH = final_retractionlist.csv (Must be in "name.csv" f
 RETRACTION_NOTICE_CITATIONS_FILE_PATH = retraction_notice_citations.csv (Must be in "name.csv" format)
 RETRACTED_ARTICLE_CITATIONS_FILE_PATH = retracted_article_citations.csv (Must be in "name.csv" format)
 FAILED_FILE_NAME = faillist.csv (Must be in "name.csv" format)
-WEB_SCIENCE_USERNAME = xiaoran1@ualberta.ca
-WEB_SCIENCE_PASSWORD = Wscq@1234
+MISCITATION_ARTICLE_FILE_PATH = top_articles.csv (Must be in "name.csv" format)
+MISCITATION_RESULT_FILE_PATH = miscitation_url_list.csv (Must be in "name.csv" format)
+WEB_SCIENCE_USERNAME = 
+WEB_SCIENCE_PASSWORD = 
 RETRACTION_LIST_ONLY = 0 (Must be 1 or 0 )
 CITATION_LIST_ONLY = 1 (Must be 1 or 0 )
 MAX_RETRACTED_ARTICLES_NUMBER = 2 (Must be an integer >=0 )
 MAX_RETRACTION_NOTICES_NUMBER = 500 (Must be an integer >=0 )
 MAX_RETRACTED_ARTICLE_CITATIONS_NUMBER = 2 (Must be an integer >=0 )
 MAX_RETRACTION_NOTICE_CITATIONS_NUMBER = 2 (Must be an integer >=0 )
-WHERE_TO_START = 0
+MAX_MISCITATION_RESULT_NUMBER = 55 (Must be an integer >=0 )
+WHERE_TO_START = 0 (Must be an integer >=0 )
 TITLE_WITH_DATE = 0 (Must be 1 or 0 )
-CONTINUE_WRITE = 1 (1 for append 0 for overwrite)
+CONTINUE_WRITE = 0 (1 for append 0 for overwrite)
 CREATE_FAIL_FILE = 1 (Must be 1 or 0 )
+MISCITAION_OR_NOT = 1 (Must be 1 or 0 )

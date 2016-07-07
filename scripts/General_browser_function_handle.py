@@ -12,9 +12,8 @@ import re
 import httplib
 import socket
 from selenium.webdriver.remote.command import Command
-from generate_new_retractionlist import generate_more_column
 
-CONFIGRATION_FILE_NAME = "Configration.config"
+CONFIGRATION_FILE_NAME = "config"
 DOWNLOAD_PATH = os.getcwd()
 DOWNLOAD_FILE = "savedrecs.txt"
 
@@ -23,8 +22,7 @@ class Config_Data:
     retraction_notices_path = ""
     retraction_notice_citations_path = ""
     retracted_article_citations_path = ""
-    miscitation_article_path=""
-    miscitation_list_path=""
+    miscitation_result_file_path = ""
     web_science_username = ""
     web_science_password = ""
     continue_write = 0
@@ -36,7 +34,8 @@ class Config_Data:
     max_retraction_notices_number = 0
     max_retraction_notice_citations_number = 0
     max_retracted_article_citations_number = 0
-
+    max_miscitation_result_number = 0
+    miscitaion_or_not = 0
 
     def __init__(self, name, password):
         self.web_science_username = name
@@ -44,9 +43,8 @@ class Config_Data:
         self.retracted_articles_path = ""
         self.retraction_notices_path = ""
         self.retraction_notice_citations_path = ""
-        self.retracted_article_citation_path = ""
-        self.miscitation_article_path = ""
-        self.miscitation_list_path = ""
+        self.retracted_article_citations_path = ""
+        self.miscitation_result_file_path = ""
         self.continue_write = 0
         self.where_to_start = 0
         self.first_by_title = 0
@@ -56,6 +54,8 @@ class Config_Data:
         self.max_retraction_notices_number = 0
         self.max_retraction_notice_citations_number = 0
         self.max_retracted_article_citations_number = 0
+        self.max_miscitation_result_number = 0
+        self.miscitaion_or_not = 0
 
 def remove_extra_file():
     try:
@@ -122,7 +122,7 @@ def write_failed_info(article_title, fail_indormation,row_index,
             except:
                 print "fail infomation file already removed"
         row = [article_title,fail_indormation,row_index]
-        with open(failed_file_name,continue_write) as in_csv:
+        with open(failed_file_name,"ab") as in_csv:
             print "{0!s} open success!".format(failed_file_name)
             writer = csv.writer(in_csv)
             writer.writerow(row)

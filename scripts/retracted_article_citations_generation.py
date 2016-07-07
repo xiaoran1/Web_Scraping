@@ -12,16 +12,18 @@ def read_from_config():
             if line[0] == "WEB_SCIENCE_PASSWORD":
                 CONINFO.web_science_password = line[1]
             if line[0] == "RETRACTION_NOTICES_FILE_PATH":
-                CONINFO.retraction_notices_path= line[1]
+                CONINFO.retraction_notices_path= "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "FAILED_FILE_NAME":
-                CONINFO.failed_file_name = line[1]
+                CONINFO.failed_file_name = "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "RETRACTED_ARTICLE_CITATIONS_FILE_PATH":
-                CONINFO.retracted_article_citations_path = line[1]
+                CONINFO.retracted_article_citations_path = "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "MAX_RETRACTED_ARTICLE_CITATIONS_NUMBER":
                 CONINFO.max_retracted_article_citations_number= int(line[1].replace(',', ''))
             if line[0] == "CONTINUE_WRITE":
-                continue_write = int(line[1].replace(',', ''))
-                CONINFO.continue_write = ("ab" if continue_write == 1 else "wb")
+                CONINFO.continue_write = int(line[1].replace(',', ''))
             if line[0] == "WHERE_TO_START":
                 CONINFO.where_to_start = int(line[1].replace(',', ''))
             if line[0] == "CREATE_FAIL_FILE":
@@ -257,7 +259,7 @@ def add_download_data_to_csv_file(dest_path, row_index,start_from):
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
                     print "{0!s} open success!".format(txt_file)
-                    with open(csv_file, CONINFO.continue_write) as out_csv:
+                    with open(csv_file, "ab") as out_csv:
                         write_to = csv.writer(out_csv)
                         print "{0!s} open success!".format(dest_path)
                         rowcount = start_from
@@ -305,7 +307,7 @@ def take_out_title_from_retraction_list():
     pub_name_col = 0
     if CONINFO.continue_write == 0:
         try:
-            os.remove(CONINFO.retracted_article_citation_path)
+            os.remove(CONINFO.retracted_article_citations_path)
         except Exception:
             print "Citation list file already been removed"
     browser = setup_webdriver("chrome")
@@ -405,8 +407,6 @@ if __name__ == '__main__':
             raise Exception('something wrong with config file')
         print "Start the generation of retracted article citations list "
         print "max_citation_number {0!s}".format((CONINFO.max_retracted_article_citations_number))
-        # out_file = generate_more_column(RETRACTION_LIST_PATH)
-        # RETRACTION_LIST_PATH =out_file
         take_out_title_from_retraction_list()
     finally:
         print "Quit the main program"

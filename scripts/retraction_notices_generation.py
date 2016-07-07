@@ -12,18 +12,14 @@ def read_from_config():
             if line[0] == "WEB_SCIENCE_PASSWORD":
                 CONINFO.web_science_password = line[1]
             if line[0] == "RETRACTION_NOTICES_FILE_PATH":
-                CONINFO.retraction_notices_path= line[1]
-            if line[0] == "FAILED_FILE_NAME":
-                CONINFO.failed_file_name = line[1]
+                CONINFO.retraction_notices_path= "{}\data\{}".format(
+                    os.path.dirname(os.getcwd()),line[1])
             if line[0] == "MAX_RETRACTION_NOTICES_NUMBER":
                 CONINFO.max_retraction_notices_number = int(line[1].replace(',', ''))
             if line[0] == "CONTINUE_WRITE":
-                continue_write = int(line[1].replace(',', ''))
-                CONINFO.continue_write = ("ab" if continue_write == 1 else "wb")
+                CONINFO.continue_write = int(line[1].replace(',', ''))
             if line[0] == "WHERE_TO_START":
                 CONINFO.where_to_start = int(line[1].replace(',', ''))
-            if line[0] == "CREATE_FAIL_FILE":
-                CONINFO.create_fail_file = int(line[1].replace(',', ''))
 
 
 def add_search_condition(browser, search_input, search_type,field_index):
@@ -162,7 +158,7 @@ def add_download_data_to_csv_file(dest_path, row_index,start_from):
                 with open(txt_file, "r+") as in_txt:
                     read_in = csv.reader(in_txt, delimiter='\t')
                     print "{0!s} open success!".format(txt_file)
-                    with open(csv_file, CONINFO.continue_write) as out_csv:
+                    with open(csv_file, "ab") as out_csv:
                         write_to = csv.writer(out_csv)
                         print "{0!s} open success!".format(dest_path)
                         rowcount = start_from
@@ -242,14 +238,12 @@ if __name__ == '__main__':
     try:
         read_from_config()
         if (CONINFO.web_science_password == "" or CONINFO.web_science_username == ""
-            or CONINFO.retraction_notices_path == ""
-            or CONINFO.failed_file_name==""):
+            or CONINFO.retraction_notices_path == ""):
             raise Exception('something wrong with config file')
         print "Start the generation of retraction notices list "
         print "This will return you {0!s} records".format((CONINFO.max_retraction_notices_number))
         print "Start from record: {0!s}".format((CONINFO.where_to_start))
-        # out_file = generate_more_column(RETRACTION_LIST_PATH)
-        # RETRACTION_LIST_PATH =out_file
+        print CONINFO.retraction_notices_path
         get_retraction_list()
     finally:
         print "Quit the main program"

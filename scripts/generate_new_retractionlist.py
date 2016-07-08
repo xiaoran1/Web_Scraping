@@ -6,7 +6,7 @@
 
 from General_browser_function_handle import *
 
-CONINFO = Config_Data("","")
+CONINFO = ConfigData("","")
 
 def read_from_config():
     global CONINFO

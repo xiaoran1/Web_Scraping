@@ -1,6 +1,11 @@
+# This script can generate a retracted notices information list in the csv format
+# it will first login to web of science, then search "retraction of" by title
+# the search results will then be refined by correlation and retraction, then sort by time cited,
+# the program will then download all the result articles' detailed information into a csv file.
+
 from General_browser_function_handle import *
 
-CONINFO = Config_Data("", "")
+CONINFO = ConfigData("", "")
 
 def read_from_config():
     global CONINFO
@@ -63,7 +68,7 @@ def do_search(browser, article_name):
     return browser
 
 
-def mark_and_download_data(browser, end, start):
+def download_data(browser, end, start):
     noerror = True
     try:
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='s2id_saveToMenu']")))
@@ -120,7 +125,7 @@ def loop_through_record_and_download(browser, upper_bound, row_index):
                     start_from = end_by + 1
                 end_by += upper_bound
             print "search from ", start_from, " to ", end_by
-            browser,error_not_go_beyond = mark_and_download_data(browser, end_by, start_from)
+            browser,error_not_go_beyond = download_data(browser, end_by, start_from)
             if error_not_go_beyond:
                 if get_status(browser) == "Dead":
                     raise Exception, 'browser already quit'

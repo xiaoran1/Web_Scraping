@@ -1,3 +1,6 @@
+# This script include the model of the configuration file information and some
+# basic functions (include login and write failed information) that shared by multiple scripts
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,7 +20,7 @@ CONFIGRATION_FILE_NAME = "config"
 DOWNLOAD_PATH = os.getcwd()
 DOWNLOAD_FILE = "savedrecs.txt"
 
-class Config_Data:
+class ConfigData:
     retracted_articles_path = ""
     retraction_notices_path = ""
     retraction_notice_citations_path = ""

@@ -1,6 +1,13 @@
+# This script is used for generating the download url address for each article in the
+# miscitation list in csv format.
+# For each row in the miscitation list, the program will take out the author names and
+# article title, combine these information into a search string used for later search
+# in google scholar, if the search result shows that one article has a direct download link,
+# the program will then download that url address into a csv file
+
 from General_browser_function_handle import *
 
-CONINFO = Config_Data("", "")
+CONINFO = ConfigData("", "")
 
 def read_from_config():
     global CONINFO

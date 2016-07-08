@@ -1,6 +1,13 @@
+# This script can generate a retracted article information list in the csv format
+# it will take out each row from the retracted notices list file and
+# use each row's author, publication year and publication name for doing
+# the search in web of science, the search results will then be sorted by time cited,
+# the program then will download the articles' detailed information with highest time cited into a csv file.
+
+
 from General_browser_function_handle import *
 
-CONINFO = Config_Data("", "")
+CONINFO = ConfigData("", "")
 def read_from_config():
     global CONINFO
     with open(CONFIGRATION_FILE_NAME, "r+") as my_config:

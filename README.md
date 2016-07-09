@@ -21,49 +21,72 @@ Collect list of articles that are eventually retracted, and articles that cite r
 ### Usage: 
 
 ```
-python web_scraping.py
+python retraction_notices_generation.py
+python generate_new_retractionlist.py
+python retraction_notice_citations_generation.py
+python retracted_articles_list_generation.py
+python retracted_article_citations_generation.py
+python web_scraping_miscitation.py
 ```
+
+### 2 Modes:
+
+General web scraping files generation(not miscitation): 
+
+1. Run retraction_notices_generation 
+
+2. Run generate_new_retractionlist 
+
+3. Run one of retraction_notice_citations_generation.py, retracted_articles_list_generation.py 
+   retracted_article_citations_generation.py, no specific orders needed for this step, make sure name each 
+   file with different name in the config file. 
+
+Miscitation part files generation: 
+
+1. Naming the RETRACTION_NOTICES_FILE_PATH in the config file as the article list file that you want to use for search 
+
+2. Run retraction_notices_generation 
+
+3. Run generate_new_retractionlist 
+
+4. Run retracted_articles_list_generation 
+
+5. Rename RETRACTION_NOTICES_FILE_PATH as the one you just generate for step 4, then running retracted_article_citations_generation.py 
+
+6. Run web_scraping_miscitation.py 
+
+
 
 ### config file:
 
-The program provides 4 different modes as the user can decide to use which one by change the configuration file:
+Each parameters within the configuration file:
 
-* **Mode 1:**  
-  * CITATION_LIST_ONLY: This parameter can be either 1 or 0, if the user choose to set it as 1, the program will consider the user only want to do the citation list generation (Please pay attention that if you want to use this mode there must be a retracted article list file that already existed in the directory path that same as the script)
-  
-  * MAX_CITATION_NUMBER: This parameter can only be set to an integer that greater than 0, it shows that maximum title number (within the retraction list) that the user wants to search for citation list generation.
+* RETRACTED_ARTICLES_FILE_PATH: How the user wants to name the retraced articles' list file (must end by .csv)
 
-* **Mode 2:**   
-  * RETRACTION_LIST_ONLY: This parameter can be either 1 or 0, if the user choose to set it as 1, the program will consider the user only want to do the retraction list generation
+* RETRACTION_NOTICES_FILE_PATH: How the user wants to name the retraced notices' list file (must end by .csv)
 
-  * MAX_RETRACTION_NUMBER: This parameter can only be set to an integer that greater than 0, it shows that maximum retracted article number that the user wants to get for retracted article information list generation. (The minium will be 500 records if the total number of retracted article is >500)
+* RETRACTION_NOTICE_CITATIONS_FILE_PATH: How the user wants to name the retraced notices' citaions' list file (must end by .csv)
 
-* **Mode 3:** If the above 2 parameters (CITATION_LIST_ONLY and RETRACTION_LIST_ONLY) both set to 0, the program will just execute both file's generation without any upper bound limitation( in this case, the variable MAX_CITATION_NUMBER and MAX_RETRACTION_NUMBER won't affect the program any more)
+* RETRACTED_ARTICLE_CITATIONS_FILE_PATH: How the user wants to name the retraced articles' citations' list file (must end by .csv)
 
-* **Mode 4:** If the above 2 variables both set to 1. This is for the test only.
+* FAILED_FILE_NAME: How the user wants to name The file that stored the failed search information. (must end by .csv)
 
-Other parameters within the configuration file:
-
-* RETRACTION_LIST_NAME: How the user wants to name the retraced article information list file (must end by .csv)
-
-* CITATION_LIST_NAME: How the user wants to name the cited article information list file (must end by .csv)
+* MISCITATION_RESULT_FILE_PATH: How the user wants to name the file of the list of each article's citations' download link url (must end by .csv)
 
 * WEB_SCIENCE_USERNAME & WEB_SCIENCE_PASSWORD: User's email address and password that used to log into Web of Science
 
-* TITLE_WITH_DATE: For the cited article information collection only, the user can decides to include the retraction/correction date within the article title for search (set to 1 then) or not(set to 0 then)
+* All the MAX_**_NUMBER: How many records the user want to get for running the scripts(each ** will correspond to each path file name)
 
 * CONTINUE_WRITE: Do you want to overwrite the existing information or not, if set to be 0, the program will clean all the existing information within the generated file and replace with the new data.(Only available for citation list only mode or retraction list only mode)
 
 * WHERE_TO_START: Only useful when CONTINUE_WRITE been set to 1, tell the program where to start (which row or title to be the first one used for search)
 
-* FAILED_SEARCH_FILE: The file name of the failed title search information, must be end by .csv
-
 * CREATE_FAIL_FILE: If the user wants to create a file for recording the failed title search information, set this to 1, otherwise set it to 0 
+
+* MISCITAION_OR_NOT: This will only set to be 1 if the user just want to generate files for miscitation part.
 
 
 ### Possible Failed Search Conditions: 
-
-* The syntax of the title is not valid for web of science. 
 
 * Web of Science cannot find any record match the title.  
 

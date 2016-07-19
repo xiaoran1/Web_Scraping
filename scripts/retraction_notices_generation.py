@@ -61,7 +61,10 @@ def do_search(browser, article_name):
         browser = add_search_condition(browser, article_name, "Title", field_index)
         search_buttons = []
         search_buttons = browser.find_elements_by_xpath(
-            "//span[@class='searchButton']/input[@id='UA_GeneralSearch_input_form_sb']")
+            "//span[@class='searchButton']/input[@title='Search']")
+        # print len(search_buttons),"   sddsds"
+        # for sb in search_buttons:
+        #     print sb.get_attribute("innerHTML")
         search_buttons[len(search_buttons)-1].click()
     except Exception, e:
         logging.exception(e)
@@ -216,11 +219,18 @@ def get_retraction_list():
         if get_status(browser) == "Dead":
             raise Exception, 'browser already quit'
         # Refine result by document type
-        browser.find_element_by_xpath("//h4[@class='refine-title']/i[@title='Show the Document Types']").click()
+        # ww = []
+        # ww = browser.find_elements_by_xpath("//h4[@class='refine-title']/i[@title='Show the Document Types']")
+        # print len(ww)
+        # for w in ww:
+        #     print w.get_attribute("innerHTML")
+
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//a[@id='DocumentType']")))
+
         browser.find_element_by_xpath("//div[@class='refine-content']/div/a[@id='DocumentType']").click()
-        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//input[@value='DocumentType_RETRACTION']")))
-        browser.find_element_by_xpath("//input[@value='DocumentType_RETRACTION']").click()
+
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//input[@value='DocumentType_CORRECTION']")))
+        #browser.find_element_by_xpath("//input[@value='DocumentType_RETRACTION']").click()
         browser.find_element_by_xpath("//input[@value='DocumentType_CORRECTION']").click()
         browser.find_element_by_xpath("//div[@class='more_title']/input[@title='Refine']").click()
         # do sorting by time

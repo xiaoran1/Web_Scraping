@@ -98,7 +98,7 @@ def do_search(browser, publication_name, year, authorlist,second_search, title):
             browser = add_search_condition(browser, title, "Title", field_index)
         search_buttons = []
         search_buttons = browser.find_elements_by_xpath(
-            "//span[@class='searchButton']/input[@id='UA_GeneralSearch_input_form_sb']")
+            "//span[@class='searchButton']/input[@title='Search']")
         search_buttons[len(search_buttons)-1].click()
     except Exception, e:
         logging.exception(e)

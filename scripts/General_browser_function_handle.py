@@ -129,3 +129,22 @@ def write_failed_info(article_title, fail_indormation,row_index,
             print "{0!s} open success!".format(failed_file_name)
             writer = csv.writer(in_csv)
             writer.writerow(row)
+
+def modify_config_file(newwhere):
+    copyname = "copyconfig"
+    configcopy = "{}\scripts\{}".format(
+                    os.path.dirname(os.getcwd()),copyname)
+    with open(CONFIGRATION_FILE_NAME, "r+") as r_file:
+        with open(configcopy, 'w') as w_file:
+            for line in r_file:
+                newline = line.replace('=', ' ').replace('/n', ' ').split()
+                if newline[0] == "WHERE_TO_START":
+                    w_file.write("WHERE_TO_START = {} (Must be an integer >=0 )\n".format(newwhere))
+                elif newline[0] == "CONTINUE_WRITE":
+                    w_file.write("CONTINUE_WRITE = 1 (1 for append 0 for overwrite)\n")
+                else:
+                    w_file.write(line)
+    #Remove original file
+    os.remove(CONFIGRATION_FILE_NAME)
+    #Move new file
+    os.rename(configcopy,CONFIGRATION_FILE_NAME)

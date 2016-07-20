@@ -305,7 +305,7 @@ def take_out_title_from_retraction_list():
     finally:
         print "done taking out titles from retraction list for gathering citations"
         browser.quit()
-    return
+        return row_index
 
 if __name__ == '__main__':
     try:
@@ -316,7 +316,11 @@ if __name__ == '__main__':
             or CONINFO.failed_file_name==""):
             raise Exception('something wrong with config file')
         print "Start the generation of retracted articles list "
-        take_out_title_from_retraction_list()
+        end_row = 0
+        while(end_row < CONINFO.max_retracted_articles_number):
+            end_row = take_out_title_from_retraction_list()
+            modify_config_file(end_row)
+            read_from_config()
     finally:
         print "Quit the main program"
     sys.exit(0)

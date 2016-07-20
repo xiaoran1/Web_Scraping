@@ -323,6 +323,7 @@ def take_out_title_from_retraction_list():
         is_column_head = True
         csv_file = CONINFO.retraction_notices_path
         with open(csv_file, "rb") as retraction_list_file:
+            print "retraion_notice_path open success: {0!s}".format((csv_file))
             list_reader = csv.reader(retraction_list_file)
             for row in list_reader:
                 year = ""
@@ -346,6 +347,7 @@ def take_out_title_from_retraction_list():
                     where += 1
                     row_index += 1
                     if CONINFO.where_to_start > 0 and where < CONINFO.where_to_start:
+
                         continue
                     if CONINFO.where_to_start > 0 and where > CONINFO.where_to_start + 198:
                         browser.quit()
@@ -361,6 +363,7 @@ def take_out_title_from_retraction_list():
                     year = row[year_col]
                     publication_name = row[pub_name_col]
                     if year == "" or len(authorlist) < 1 or publication_name == "":
+                        print year," ",len(authorlist)," ",publication_name
                         continue
                     if CONINFO.max_retracted_article_citations_number != 0:
                         if test_time >= CONINFO.max_retracted_article_citations_number:
@@ -401,7 +404,7 @@ def take_out_title_from_retraction_list():
     finally:
         print "done taking out titles from retraction list for gathering citations"
         browser.quit()
-    return
+        return row_index
 
 if __name__ == '__main__':
     try:
@@ -414,7 +417,11 @@ if __name__ == '__main__':
             raise Exception('something wrong with config file')
         print "Start the generation of retracted article citations list "
         print "max_citation_number {0!s}".format((CONINFO.max_retracted_article_citations_number))
-        take_out_title_from_retraction_list()
+        end_row = 0
+        while(end_row < CONINFO.max_retracted_article_citations_number):
+            end_row = take_out_title_from_retraction_list()
+            modify_config_file(end_row)
+            read_from_config()
     finally:
         print "Quit the main program"
     sys.exit(0)

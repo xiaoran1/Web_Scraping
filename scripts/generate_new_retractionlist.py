@@ -39,6 +39,7 @@ def generate_more_column(original_file_path):
                     take_out_col_num = 0
                 if is_head == 1:
                     is_head = 0
+                    row.append("")
                     row.append("year")
                     write_to.writerow(row)
                 else:

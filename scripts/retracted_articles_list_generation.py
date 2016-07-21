@@ -92,8 +92,11 @@ def do_search(browser, publication_name, year, authorlist,second_search, title):
                         browser = add_search_condition(browser, final_name, "Author", field_index)
                         author_num += 1
                 else:
+                    if author_num >= 23:
+                        break
                     field_index += 1
                     browser = add_search_condition(browser, final_name,"Author",field_index)
+                    author_num += 1
         else:
             browser = add_search_condition(browser, title, "Title", field_index)
         search_buttons = []
@@ -279,7 +282,7 @@ def take_out_title_from_retraction_list():
                     try:
                         not_found = browser.find_element_by_xpath(
                             "//div[@class='errorMessage'][@id='noRecordsDiv']")
-                        if(article_title!=""):
+                        if(article_title==""):
                             browser = do_search(browser, publication_name, year, authorlist, True,article_title)
                             not_found = browser.find_element_by_xpath(
                                 "//div[@class='errorMessage'][@id='noRecordsDiv']")

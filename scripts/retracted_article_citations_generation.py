@@ -89,8 +89,11 @@ def do_search(browser, publication_name, year, authorlist,second_search):
                     browser = add_search_condition(browser, final_name, "Author", field_index)
                     author_num += 1
             else:
+                if author_num >= 23:
+                    break
                 field_index += 1
                 browser = add_search_condition(browser, final_name,"Author",field_index)
+                author_num += 1
         search_buttons = []
         search_buttons = browser.find_elements_by_xpath(
             "//span[@class='searchButton']/input[@title='Search']")
